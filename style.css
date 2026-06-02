@@ -1,60 +1,81 @@
+/* Giao diện nền đen tổng thể */
 body {
-    background-color: #222;
+    background-color: #1a1a1a;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     text-align: center;
-}
-
-canvas {
-    background: #5c94fc; /* Màu xanh bầu trời giống Mario */
-    border: 4px solid white;
-    display: block;
-    margin: 20px auto;
-}
-/* Ẩn nút trên máy tính */
-#mobile-controls {
-    display: none;
-    position: absolute;
-    bottom: 15px;
-    left: 0;
-    width: 100%;
-    padding: 0 20px;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
     box-sizing: border-box;
-    z-index: 999;
 }
 
-/* Hiện nút khi chơi trên điện thoại */
-@media (max-width: 1024px) {
-    #mobile-controls {
-        display: flex;
-        justify-content: space-between;
-    }
+h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 28px;
+    color: #fff;
+}
+
+/* Khung viền Canvas game */
+canvas {
+    background-color: #5c94fc;
+    border: 4px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    max-width: 100%;
+    height: auto;
+}
+
+p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #ccc;
+}
+
+/* KHU VỰC NÚT BẤM ĐIỆN THOẠI - CỐ ĐỊNH LUÔN HIỆN */
+#mobile-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px; /* Khớp với chiều rộng của Canvas game */
+    margin-top: 15px;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .left-controls, .right-controls {
     display: flex;
-    gap: 15px;
+    gap: 20px;
 }
 
+/* Kiểu dáng các nút bấm cảm ứng */
 #mobile-controls button {
-    width: 65px;
-    height: 65px;
-    background-color: rgba(255, 255, 255, 0.25);
-    border: 3px solid #fff;
+    width: 70px;
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 3px solid #ffffff;
     border-radius: 50%;
     color: white;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+    transition: background-color 0.1s, transform 0.1s;
 }
 
+/* Khi chạm tay hoặc click chuột vào nút */
 #mobile-controls button:active {
-    background-color: rgba(252, 180, 52, 0.8);
+    background-color: #fcb434;
+    color: black;
     border-color: #fcb434;
     transform: scale(0.9);
 }
