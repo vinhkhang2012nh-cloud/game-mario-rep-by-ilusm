@@ -35,16 +35,22 @@ p {
     font-size: 16px;
     color: #ccc;
 }
-
-/* KHU VỰC NÚT BẤM ĐIỆN THOẠI - CỐ ĐỊNH LUÔN HIỆN */
+/* 1. MẶC ĐỊNH (TRÊN MÁY TÍNH): Ẩn hoàn toàn bộ nút bấm ảo đi */
 #mobile-controls {
-    display: flex;
+    display: none;
     justify-content: space-between;
     width: 100%;
     max-width: 800px; /* Khớp với chiều rộng của Canvas game */
     margin-top: 15px;
     padding: 0 10px;
     box-sizing: border-box;
+}
+
+/* 2. TRÊN ĐIỆN THOẠI/MÁY TÍNH BẢNG (Màn hình từ 1024px trở xuống): Hiện nút bấm lên */
+@media (max-width: 1024px) {
+    #mobile-controls {
+        display: flex; /* Kích hoạt lại hiển thị dạng hàng ngang */
+    }
 }
 
 .left-controls, .right-controls {
@@ -72,7 +78,7 @@ p {
     transition: background-color 0.1s, transform 0.1s;
 }
 
-/* Khi chạm tay hoặc click chuột vào nút */
+/* Khi chạm tay vào nút */
 #mobile-controls button:active {
     background-color: #fcb434;
     color: black;

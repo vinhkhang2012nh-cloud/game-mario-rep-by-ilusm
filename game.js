@@ -109,7 +109,24 @@ function generateMap(targetX) {
 const keys = {};
 window.addEventListener("keydown", (e) => { keys[e.code] = true; });
 window.addEventListener("keyup", (e) => { keys[e.code] = false; });
+// --- ĐIỀU KHIỂN CẢM ỨNG ĐIỆN THOẠI (BẢN VÁ LỖI KHÔNG DI CHUYỂN) ---
+const btnLeft = document.getElementById("btn-left");
+const btnRight = document.getElementById("btn-right");
+const btnJump = document.getElementById("btn-jump");
 
+if (btnLeft && btnRight && btnJump) {
+    // Khi chạm vào nút Qua Trái -> Kích hoạt phím KeyA
+    btnLeft.addEventListener("touchstart", (e) => { e.preventDefault(); keys["KeyA"] = true; });
+    btnLeft.addEventListener("touchend", (e) => { e.preventDefault(); keys["KeyA"] = false; });
+
+    // Khi chạm vào nút Qua Phải -> Kích hoạt phím KeyD
+    btnRight.addEventListener("touchstart", (e) => { e.preventDefault(); keys["KeyD"] = true; });
+    btnRight.addEventListener("touchend", (e) => { e.preventDefault(); keys["KeyD"] = false; });
+
+    // Khi chạm vào nút Nhảy -> Kích hoạt phím Space
+    btnJump.addEventListener("touchstart", (e) => { e.preventDefault(); keys["Space"] = true; });
+    btnJump.addEventListener("touchend", (e) => { e.preventDefault(); keys["Space"] = false; });
+}
 // --- 6. HÀM KIỂM TRA VA CHẠM ---
 function colCheck(shapeA, shapeB) {
     const vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2));
@@ -164,7 +181,9 @@ function resetGame() {
     items.length = 0;
     enemies.length = 0;
     lastGeneratedX = 300;
+    
     isGameWon = false;
+    isJumpscareActive = false; // ĐẢM BẢO CÓ DÒNG NÀY ĐỂ HỦY ĐÓNG BĂNG GAME
     
     for (let key in keys) { keys[key] = false; }
 }
@@ -192,23 +211,21 @@ function showCustomAlert(title, message, buttonText, callback) {
 // --- 7. HÀM XỬ LÝ CHẾT VÌ RƠI XUỐNG VỰC GAI ---
 function playerFallInSpikes() {
     player.lives = 0; 
-    
-    // Bật biến chặn khóa cứng phím bấm di chuyển trong vòng lặp update()
-    isJumpscareActive = true; 
-    
-    // Xóa sạch trạng thái nhấn phím cũ
-    for (let key in keys) { keys[key] = false; }
-    
+    isJumpscareActive = true; // Tạm dừng cập nhật game
+    for (let key in keys) { keys[key] = false; } // Reset toàn bộ phím bấm tránh bị kẹt đi tiếp
+
+    // Gọi hộp thoại tự chế (đã thiết kế trong index.html)
     showCustomAlert(
         "THẤT BẠI 💀", 
         "Bạn đã rơi xuống hố gai và mất hết mạng rồi!", 
         "THỬ LẠI XEM", 
         function() {
-            resetGame();
-            isJumpscareActive = false; // Mở khóa cho phép di chuyển lại khi bấm nút
+            resetGame(); // Reset mạng, điểm, vị trí map
+            isJumpscareActive = false; // Kích hoạt lại vòng lặp game để chơi tiếp
         }
     );
 }
+
 // --- HÀM XỬ LÝ KHI ĐỤNG TRÚNG QUÁI ---
 function playerHitEnemy() {
     if (player.isInvincible || isJumpscareActive) return; 
@@ -217,49 +234,19 @@ function playerHitEnemy() {
     
     if (player.lives <= 0) {
         isJumpscareActive = true; 
-        
         for (let key in keys) { keys[key] = false; }
         
-        const jsLayer = document.getElementById("jumpscare-layer");
-        const jsImg = document.getElementById("jumpscare-img");
-        
-        if (jsLayer && jsImg) {
-            jsLayer.style.display = "flex"; 
-            
-            let scale = 1;
-            let zoomIn = setInterval(() => {
-                scale = scale === 1 ? 1.4 : 1;
-                jsImg.style.transform = `scale(${scale})`;
-            }, 100);
-
-            setTimeout(() => {
-                clearInterval(zoomIn);
-                jsLayer.style.display = "none"; 
-                
-                showCustomAlert(
-                    "GAME OVER 👾", 
-                    "Bạn đã bị quái vật hạ gục hoàn toàn!", 
-                    "HỒI SINH CHƠI TIẾP", 
-                    function() {
-                        resetGame(); 
-                        isJumpscareActive = false; 
-                        update(); 
-                    }
-                );
-            }, 1500);
-        } else {
-            showCustomAlert(
-                "GAME OVER 👾", 
-                "Bạn đã hết mạng rồi!", 
-                "HỒI SINH", 
-                function() {
-                    resetGame();
-                    isJumpscareActive = false;
-                }
-            );
-        }
-
+        showCustomAlert(
+            "GAME OVER 👾", 
+            "Bạn đã bị quái vật hạ gục hoàn toàn!", 
+            "HỒI SINH CHƠI TIẾP", 
+            function() {
+                resetGame(); // Reset toàn bộ game
+                isJumpscareActive = false; // Mở khóa đóng băng game
+            }
+        );
     } else {
+        // Nếu còn mạng thì chỉ bị bật lùi lại và nhấp nháy bất tử tạm thời
         player.velY = -6;
         player.velX = -8; 
         player.isInvincible = true;
@@ -269,20 +256,21 @@ function playerHitEnemy() {
 
 // --- 8. VÒNG LẶP CẬP NHẬT GAME ---
 function update() {
-    if (isJumpscareActive || isGameWon) return; 
-
-    if (keys["ArrowRight"] || keys["KeyD"]) {
-        if (player.velX < player.speed) player.velX++;
+    // Thay vì return chặn đứng cả game, chúng ta chỉ chặn di chuyển của Mario nếu đang hiện thông báo
+    if (!isJumpscareActive && !isGameWon) {
+        // Chỉ chạy các lệnh bấm phím di chuyển khi KHÔNG bị chết
+        if (keys["ArrowRight"] || keys["KeyD"]) {
+            if (player.velX < player.speed) player.velX++;
+        }
+        if (keys["ArrowLeft"] || keys["KeyA"]) {
+            if (player.velX > -player.speed) player.velX--;
+        }
+        if ((keys["ArrowUp"] || keys["Space"]) && !player.jumping && player.grounded) {
+            player.jumping = true;
+            player.grounded = false;
+            player.velY = -12; 
+        }
     }
-    if (keys["ArrowLeft"] || keys["KeyA"]) {
-        if (player.velX > -player.speed) player.velX--;
-    }
-    if ((keys["ArrowUp"] || keys["Space"]) && !player.jumping && player.grounded) {
-        player.jumping = true;
-        player.grounded = false;
-        player.velY = -12; 
-    }
-
     player.velX *= friction;
     player.velY += gravity;
     player.x += player.velX;
