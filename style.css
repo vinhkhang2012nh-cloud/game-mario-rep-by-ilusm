@@ -11,3 +11,50 @@ canvas {
     display: block;
     margin: 20px auto;
 }
+/* Ẩn nút trên máy tính */
+#mobile-controls {
+    display: none;
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 999;
+}
+
+/* Hiện nút khi chơi trên điện thoại */
+@media (max-width: 1024px) {
+    #mobile-controls {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.left-controls, .right-controls {
+    display: flex;
+    gap: 15px;
+}
+
+#mobile-controls button {
+    width: 65px;
+    height: 65px;
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+#mobile-controls button:active {
+    background-color: rgba(252, 180, 52, 0.8);
+    border-color: #fcb434;
+    transform: scale(0.9);
+}
