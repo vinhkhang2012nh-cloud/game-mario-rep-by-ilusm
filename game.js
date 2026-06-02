@@ -187,7 +187,7 @@ function resetGame() {
     
     for (let key in keys) { keys[key] = false; }
 }
-// --- HÀM TẠO THÔNG BÁO TỰ CHẾ ĐỂ THAY THẾ ALERT MẶC ĐỊNH ---
+// --- HÀM HIỂN THỊ THÔNG BÁO VẠN NĂNG (DÙNG CHUNG CHO CẢ THẮNG VÀ THUA) ---
 function showCustomAlert(title, message, buttonText, callback) {
     const alertLayer = document.getElementById("custom-alert");
     const alertTitle = document.getElementById("alert-title");
@@ -195,16 +195,30 @@ function showCustomAlert(title, message, buttonText, callback) {
     const alertBtn = document.getElementById("alert-button");
     
     if (alertLayer && alertTitle && alertMsg && alertBtn) {
+        // Nạp dữ liệu linh hoạt theo biến truyền vào chứ không viết cứng nữa
         alertTitle.innerText = title;
         alertMsg.innerText = message;
-        alertBtn.innerText = buttonText; // Đổi chữ nút bấm linh hoạt
+        alertBtn.innerText = buttonText; 
         
-        alertLayer.style.display = "flex"; // Hiện bảng lên
+        // Hiện bảng thông báo lên đè lên trên màn hình Jumpscare
+        alertLayer.style.display = "flex"; 
+        alertLayer.style.zIndex = "9999"; 
         
-        alertBtn.onclick = function() {
-            alertLayer.style.display = "none"; // Ẩn bảng đi khi bấm nút
-            if (callback) callback(); 
+        // Ép máy tính tập trung tiêu điểm vào nút bấm
+        setTimeout(() => { alertBtn.focus(); }, 50);
+        
+        // Xử lý bấm nút (Ăn cả chuột máy tính lẫn cảm ứng điện thoại)
+        const handleAction = function(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            alertLayer.style.display = "none"; // Ẩn bảng đi
+            if (callback) callback(); // Kích hoạt hàm hồi sinh hoặc chơi lại
         };
+
+        alertBtn.onclick = handleAction; 
+        alertBtn.ontouchstart = handleAction; 
     }
 }
 
