@@ -168,8 +168,7 @@ function resetGame() {
     
     for (let key in keys) { keys[key] = false; }
 }
-
-// --- HÀM HIỂN THỊ THÔNG BÁO TỰ CHẾ (THAY THẾ CHỮ OK VÀ SỐ IP) ---
+// --- HÀM TẠO THÔNG BÁO TỰ CHẾ ĐỂ THAY THẾ ALERT MẶC ĐỊNH ---
 function showCustomAlert(title, message, buttonText, callback) {
     const alertLayer = document.getElementById("custom-alert");
     const alertTitle = document.getElementById("alert-title");
@@ -179,25 +178,25 @@ function showCustomAlert(title, message, buttonText, callback) {
     if (alertLayer && alertTitle && alertMsg && alertBtn) {
         alertTitle.innerText = title;
         alertMsg.innerText = message;
-        alertBtn.innerText = buttonText; 
+        alertBtn.innerText = buttonText; // Đổi chữ nút bấm linh hoạt
         
-        alertLayer.style.display = "flex"; 
+        alertLayer.style.display = "flex"; // Hiện bảng lên
         
         alertBtn.onclick = function() {
-            alertLayer.style.display = "none"; 
+            alertLayer.style.display = "none"; // Ẩn bảng đi khi bấm nút
             if (callback) callback(); 
         };
     }
 }
 
-// --- 7. HÀM XỬ LÝ CHẾT VÌ RƠI XUỐNG VỰC GAI (ĐÃ SỬA LỖI VẪN DI CHUYỂN ĐƯỢC) ---
+// --- 7. HÀM XỬ LÝ CHẾT VÌ RƠI XUỐNG VỰC GAI ---
 function playerFallInSpikes() {
     player.lives = 0; 
     
-    // ĐÓNG BĂNG GAME: Khóa vòng lặp update lại ngay lập tức khi chạm gai
+    // Bật biến chặn khóa cứng phím bấm di chuyển trong vòng lặp update()
     isJumpscareActive = true; 
     
-    // Xóa sạch trạng thái nhấn phím để Mario không tự chạy tiếp
+    // Xóa sạch trạng thái nhấn phím cũ
     for (let key in keys) { keys[key] = false; }
     
     showCustomAlert(
@@ -206,10 +205,7 @@ function playerFallInSpikes() {
         "THỬ LẠI XEM", 
         function() {
             resetGame();
-            
-            // MỞ KHÓA GAME: Cho phép người chơi di chuyển lại sau khi bấm nút
-            isJumpscareActive = false; 
-            update(); // Kích hoạt lại vòng lặp game
+            isJumpscareActive = false; // Mở khóa cho phép di chuyển lại khi bấm nút
         }
     );
 }
@@ -321,17 +317,15 @@ function update() {
         setTimeout(() => {
             showCustomAlert(
                 "CHIẾN THẮNG 🎉", 
-                "Xuất sắc! Bạn đã đến đích với Điểm Số: " + player.score, 
+                "Xuất sắc! Bạn đã đến đích an toàn với Điểm Số: " + player.score, 
                 "CHƠI TIẾP VÒNG MỚI", 
                 function() {
                     resetGame();
-                    update();
                 }
             );
         }, 100);
         return;
     }
-
     if (player.x > canvas.width / 2) {
         camera.x = player.x - canvas.width / 2;
     } else {
