@@ -208,25 +208,28 @@ function showCustomAlert(title, message, buttonText, callback) {
     }
 }
 
-// --- 7. HÀM XỬ LÝ CHẾT VÌ RƠI XUỐNG VỰC GAI ---
+// --- 7. HÀM XỬ LÝ CHẾT VÌ RƠI XUỐNG VỰC GAI (KHÔNG CÓ JUMPSCARE) ---
 function playerFallInSpikes() {
     player.lives = 0; 
-    isJumpscareActive = true; // Tạm dừng cập nhật game
-    for (let key in keys) { keys[key] = false; } // Reset toàn bộ phím bấm tránh bị kẹt đi tiếp
+    isJumpscareActive = true; 
+    for (let key in keys) { keys[key] = false; } 
 
-    // Gọi hộp thoại tự chế (đã thiết kế trong index.html)
+    // ĐẢM BẢO ẨN JUMPSCARE (đề phòng trường hợp trước đó chưa ẩn)
+    document.getElementById("jumpscare-layer").style.display = "none";
+
+    // Rơi vào gai thì hiện thẳng bảng thông báo luôn, không cần chờ đợi gì hết
     showCustomAlert(
         "THẤT BẠI 💀", 
         "Bạn đã rơi xuống hố gai và mất hết mạng rồi!", 
         "THỬ LẠI XEM", 
         function() {
-            resetGame(); // Reset mạng, điểm, vị trí map
-            isJumpscareActive = false; // Kích hoạt lại vòng lặp game để chơi tiếp
+            resetGame(); 
+            isJumpscareActive = false; 
         }
     );
 }
 
-// --- HÀM XỬ LÝ KHI ĐỤNG TRÚNG QUÁI ---
+// --- HÀM XỬ LÝ KHI ĐỤNG TRÚNG QUÁI (CÓ JUMPSCARE GIẬT GIẬT) ---
 function playerHitEnemy() {
     if (player.isInvincible || isJumpscareActive) return; 
 
@@ -236,24 +239,38 @@ function playerHitEnemy() {
         isJumpscareActive = true; 
         for (let key in keys) { keys[key] = false; }
         
-        showCustomAlert(
-            "GAME OVER 👾", 
-            "Bạn đã bị quái vật hạ gục hoàn toàn!", 
-            "HỒI SINH CHƠI TIẾP", 
-            function() {
-                resetGame(); // Reset toàn bộ game
-                isJumpscareActive = false; // Mở khóa đóng băng game
-            }
-        );
+        // 1. Hiện màn hình Jumpscare lên
+        document.getElementById("jumpscare-layer").style.display = "flex";
+        
+        // 🔥 THÊM LỚP GIẬT GIẬT CHO ẢNH CON GOOMBA
+        const img = document.getElementById("jumpscare-img");
+        if (img) img.classList.add("jumpscare-shaking");
+        
+        // 2. Chờ 1.5 giây cho giật giật hù dọa rồi mới hiện bảng hồi sinh
+        setTimeout(function() {
+            showCustomAlert(
+                "GAME OVER 👾", 
+                "Bạn đã bị quái vật hạ gục hoàn toàn!", 
+                "HỒI SINH CHƠI TIẾP", 
+                function() {
+                    // Khi bấm nút hồi sinh: Ẩn Jumpscare
+                    document.getElementById("jumpscare-layer").style.display = "none";
+                    
+                    // 🔥 XÓA LỚP GIẬT GIẬT ĐỂ LẦN SAU CHẾT NÓ GIẬT LẠI TỪ ĐẦU
+                    if (img) img.classList.remove("jumpscare-shaking");
+                    
+                    resetGame(); 
+                    isJumpscareActive = false; 
+                }
+            );
+        }, 1500);
     } else {
-        // Nếu còn mạng thì chỉ bị bật lùi lại và nhấp nháy bất tử tạm thời
         player.velY = -6;
         player.velX = -8; 
         player.isInvincible = true;
         player.invincibleTimer = 60; 
     }
 }
-
 // --- 8. VÒNG LẶP CẬP NHẬT GAME ---
 function update() {
     // Thay vì return chặn đứng cả game, chúng ta chỉ chặn di chuyển của Mario nếu đang hiện thông báo

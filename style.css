@@ -85,3 +85,22 @@ p {
     border-color: #fcb434;
     transform: scale(0.9);
 }
+/* --- HIỆU ỨNG RUNG GIẬT KINH DỊ CHO JUMPSCARE --- */
+@keyframes shakeAndZoom {
+    0% { transform: scale(0.8) translate(0, 0) rotate(0deg); }
+    10% { transform: scale(1.1) translate(-5px, -5px) rotate(-2deg); }
+    20% { transform: scale(0.9) translate(5px, 5px) rotate(3deg); }
+    30% { transform: scale(1.2) translate(-8px, 5px) rotate(-1deg); }
+    40% { transform: scale(1.0) translate(8px, -5px) rotate(2deg); }
+    50% { transform: scale(1.3) translate(-5px, -8px) rotate(-3deg); }
+    60% { transform: scale(0.9) translate(6px, 8px) rotate(1deg); }
+    70% { transform: scale(1.2) translate(-7px, -6px) rotate(-2deg); }
+    80% { transform: scale(1.0) translate(5px, 7px) rotate(3deg); }
+    90% { transform: scale(1.3) translate(-6px, 5px) rotate(-1deg); }
+    100% { transform: scale(1.1) translate(0, 0) rotate(0deg); }
+}
+
+/* Lớp class để kích hoạt hiệu ứng giật liên tục */
+.jumpscare-shaking {
+    animation: shakeAndZoom 0.15s infinite; /* Chạy vô hạn với tốc độ cực nhanh 0.15 giây */
+}
