@@ -229,42 +229,42 @@ function playerFallInSpikes() {
     );
 }
 
-// --- HÀM XỬ LÝ KHI ĐỤNG TRÚNG QUÁI (CÓ JUMPSCARE GIẬT GIẬT) ---
+// --- HÀM XỬ LÝ KHI ĐỤNG TRÚNG QUÁI (BẢN VÁ LỖI MẤT NÚT/ĐƠ NÚT CHƠI TIẾP) ---
 function playerHitEnemy() {
+    // Ổ KHÓA THẦN THÁNH: Nếu đang trong quá trình Jumpscare thì THOÁT NGAY, không tính toán va chạm nữa
     if (player.isInvincible || isJumpscareActive) return; 
 
     player.lives--; 
     
     if (player.lives <= 0) {
-        isJumpscareActive = true; 
-        for (let key in keys) { keys[key] = false; }
+        isJumpscareActive = true; // Kích hoạt khóa ngay lập tức để hàm update không chạy lại đoạn này nữa
+        for (let key in keys) { keys[key] = false; } // Xóa sạch kẹt phím di chuyển
         
-        // 1. Hiện màn hình Jumpscare lên
-        document.getElementById("jumpscare-layer").style.display = "flex";
-        
-        // 🔥 THÊM LỚP GIẬT GIẬT CHO ẢNH CON GOOMBA
+        // 1. Hiện màn hình Jumpscare tối đen lên hù dọa
+        const jumpscareLayer = document.getElementById("jumpscare-layer");
         const img = document.getElementById("jumpscare-img");
-        if (img) img.classList.add("jumpscare-shaking");
         
-        // 2. Chờ 1.5 giây cho giật giật hù dọa rồi mới hiện bảng hồi sinh
+        if (jumpscareLayer) jumpscareLayer.style.display = "flex";
+        if (img) img.classList.add("jumpscare-shaking"); // Bật hiệu ứng giật lắc bần bật
+        
+        // 2. Hẹn giờ: Chờ đúng 1.5 giây (1500ms) cho người chơi giật mình xong mới hiện bảng
         setTimeout(function() {
             showCustomAlert(
                 "GAME OVER 👾", 
                 "Bạn đã bị quái vật hạ gục hoàn toàn!", 
                 "HỒI SINH CHƠI TIẾP", 
                 function() {
-                    // Khi bấm nút hồi sinh: Ẩn Jumpscare
-                    document.getElementById("jumpscare-layer").style.display = "none";
+                    // Khi người chơi bấm nút "HỒI SINH CHƠI TIẾP":
+                    if (jumpscareLayer) jumpscareLayer.style.display = "none"; // Ẩn màn hình đen Jumpscare
+                    if (img) img.classList.remove("jumpscare-shaking"); // Tắt class giật lắc để hồi sinh sạch sẽ
                     
-                    // 🔥 XÓA LỚP GIẬT GIẬT ĐỂ LẦN SAU CHẾT NÓ GIẬT LẠI TỪ ĐẦU
-                    if (img) img.classList.remove("jumpscare-shaking");
-                    
-                    resetGame(); 
-                    isJumpscareActive = false; 
+                    resetGame(); // Đưa Mario về vị trí ban đầu và reset stats
+                    isJumpscareActive = false; // MỞ KHÓA GAME để chơi tiếp tục bình thường
                 }
             );
         }, 1500);
     } else {
+        // Nếu đụng quái mà vẫn còn mạng thì bật lùi lại và bất tử tạm thời
         player.velY = -6;
         player.velX = -8; 
         player.isInvincible = true;
