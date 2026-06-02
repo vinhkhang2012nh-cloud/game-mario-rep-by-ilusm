@@ -250,18 +250,21 @@ function playerHitEnemy() {
         // 2. Hẹn giờ: Chờ đúng 1.5 giây (1500ms) cho người chơi giật mình xong mới hiện bảng
         setTimeout(function() {
             showCustomAlert(
-                "GAME OVER 👾", 
-                "Bạn đã bị quái vật hạ gục hoàn toàn!", 
-                "HỒI SINH CHƠI TIẾP", 
-                function() {
-                    // Khi người chơi bấm nút "HỒI SINH CHƠI TIẾP":
-                    if (jumpscareLayer) jumpscareLayer.style.display = "none"; // Ẩn màn hình đen Jumpscare
-                    if (img) img.classList.remove("jumpscare-shaking"); // Tắt class giật lắc để hồi sinh sạch sẽ
-                    
-                    resetGame(); // Đưa Mario về vị trí ban đầu và reset stats
-                    isJumpscareActive = false; // MỞ KHÓA GAME để chơi tiếp tục bình thường
-                }
-            );
+    "GAME OVER 👾", 
+    "Bạn đã bị quái vật hạ gục hoàn toàn!", 
+    "HỒI SINH CHƠI TIẾP", 
+    function() {
+        // Tắt màn hình đen Jumpscare đi trước khi cho chơi tiếp
+        const jumpscareLayer = document.getElementById("jumpscare-layer");
+        const img = document.getElementById("jumpscare-img");
+        
+        if (jumpscareLayer) jumpscareLayer.style.display = "none";
+        if (img) img.classList.remove("jumpscare-shaking");
+        
+        resetGame(); // Reset nhân vật
+        isJumpscareActive = false; // Mở khóa game
+    }
+);
         }, 1500);
     } else {
         // Nếu đụng quái mà vẫn còn mạng thì bật lùi lại và bất tử tạm thời
