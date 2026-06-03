@@ -302,7 +302,7 @@ function update() {
         if ((keys["ArrowUp"] || keys["Space"]) && !player.jumping && player.grounded) {
             player.jumping = true;
             player.grounded = false;
-            player.velY = -13; 
+            player.velY = -14; 
         }
     }
     player.velX *= friction;
