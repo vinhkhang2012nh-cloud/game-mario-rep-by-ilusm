@@ -302,7 +302,7 @@ function update() {
         if ((keys["ArrowUp"] || keys["Space"]) && !player.jumping && player.grounded) {
             player.jumping = true;
             player.grounded = false;
-            player.velY = -12; 
+            player.velY = -13; 
         }
     }
     player.velX *= friction;
@@ -335,7 +335,7 @@ function update() {
 
     if (isColliding(player, finishLine)) {
         isGameWon = true;
-        player.score += 500;
+        player.score -= 1;
         setTimeout(() => {
             showCustomAlert(
                 "CHIẾN THẮNG 🎉", 
